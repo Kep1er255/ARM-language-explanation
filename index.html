@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARMアセンブリ言語解説</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: "Courier New", Courier, monospace;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #222;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 2px #000;
+        }
+        nav {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: #9ef;
+            margin-right: 15px;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        nav a:hover {
+            color: #ffcc00;
+        }
+        section {
+            padding: 20px;
+            margin: 10px;
+            background-color: #222;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px #000;
+        }
+        h1, h2, h3 {
+            color: #9ef;
+            text-shadow: 1px 1px 1px #000;
+        }
+        pre {
+            background: #111;
+            color: #cfc;
+            padding: 10px;
+            border: 1px solid #444;
+            overflow-x: auto;
+        }
+        ul, p {
+            margin-bottom: 15px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #222;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        ARMアセンブリ言語解説 - Lスタイル
+    </header>
+    <nav>
+        <a href="#introduction">はじめに</a>
+        <a href="#syntax">基本構文と命令セット</a>
+        <a href="#registers">レジスタの解説</a>
+        <a href="#memory">メモリ操作</a>
+        <a href="#examples">実践プログラム例</a>
+        <a href="#optimization">最適化のポイント</a>
+    </nav>
+
+    <section id="introduction">
+        <h2>1. はじめに</h2>
+        <p>ARMアセンブリ言語は、RISC（Reduced Instruction Set Computer）に基づいたプロセッサ向けのアセンブリ言語であり、シンプルで効率的な命令セットを提供します。スマートフォン、タブレット、組み込みシステムなど多くのデバイスに搭載され、世界中で利用されています。</p>
+        <p>ここでは、基本的な構文から詳細なレジスタ操作、メモリ操作、最適化まで幅広く解説します。</p>
+    </section>
+
+    <section id="syntax">
+        <h2>2. 基本構文と命令セット</h2>
+        <p>ARMアセンブリ言語はシンプルな命令セットが特徴で、効率的にプログラムを記述できます。主な命令には、データ転送、算術演算、論理演算、条件分岐、シフト操作などがあります。</p>
+        <h3>基本命令の例</h3>
+        <pre><code>
+; レジスタR0に数値5をロードする
+MOV R0, #5
+
+; R0にR1の値を加算しR2に格納
+ADD R2, R0, R1
+
+; 比較命令（R2と即値10を比較）
+CMP R2, #10
+
+; 等しい場合にラベルtargetにジャンプ
+BEQ target
+        </code></pre>
+        <p>多くの命令には条件フラグがついており、特定の条件下でのみ実行されます。</p>
+    </section>
+
+    <section id="registers">
+        <h2>3. レジスタの解説</h2>
+        <p>ARMアーキテクチャは多くの汎用レジスタと特定用途のレジスタを備えています。主なレジスタの役割を以下に示します。</p>
+        <ul>
+            <li><strong>R0-R3</strong>: 関数の引数や戻り値として使用される。</li>
+            <li><strong>R4-R12</strong>: 汎用レジスタ。</li>
+            <li><strong>R13 (SP)</strong>: スタックポインタとして使用される。</li>
+            <li><strong>R14 (LR)</strong>: リンクレジスタ（関数呼び出し時に戻り先アドレスを保持）。</li>
+            <li><strong>R15 (PC)</strong>: プログラムカウンタ。</li>
+        </ul>
+    </section>
+
+    <section id="memory">
+        <h2>4. メモリ操作</h2>
+        <p>ARMアセンブリでは、メモリからのデータの読み書きにLDR（ロード）およびSTR（ストア）命令を使用します。</p>
+        <h3>例</h3>
+        <pre><code>
+; R1に格納されたアドレスの内容をR0にロード
+LDR R0, [R1]
+
+; R2に格納されたデータをR1のアドレスにストア
+STR R2, [R1]
+        </code></pre>
+        <p>メモリ操作は、アドレス計算やポインタ操作を行う際に重要な要素です。</p>
+    </section>
+
+    <section id="examples">
+        <h2>5. 実践プログラム例</h2>
+        <p>次に、簡単なプログラム例を示します。数値の加算、ループ処理、条件分岐を行う例を取り上げます。</p>
+        <pre><code>
+; 1から10までの和を計算するプログラム
+MOV R0, #0       ; 和の初期値を0に設定
+MOV R1, #1       ; カウンタを1に設定
+loop:
+    ADD R0, R0, R1 ; R0にR1を加算
+    ADD R1, R1, #1 ; カウンタをインクリメント
+    CMP R1, #11    ; 10に達したか比較
+    BNE loop       ; まだ10未満ならループ
+        </code></pre>
+    </section>
+
+    <section id="optimization">
+        <h2>6. 最適化のポイント</h2>
+        <p>ARMアセンブリでの最適化では、パイプラインの効率利用、不要なメモリ操作の削減、条件付き実行を活用することが重要です。以下にいくつかのポイントを挙げます。</p>
+        <ul>
+            <li>可能な限りレジスタ内で演算を完結させる。</li>
+            <li>命令の並びを工夫し、パイプラインのストールを回避する。</li>
+            <li>条件付き命令を活用し、分岐を減らす。</li>
+        </ul>
+    </section>
+
+    <footer>
+        &copy; 2024 ARMアセンブリ解説 
+    </footer>
+</body>
+</html>
